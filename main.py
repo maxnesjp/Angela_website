@@ -24,7 +24,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-
 @login_manager.user_loader
 def load_user(user_id):
     user = User.query.filter_by(id=int(user_id)).first()
@@ -78,7 +77,7 @@ class Comment(db.Model):
     comment_author = relationship("User", back_populates="comments")
 
 
-db.create_all()
+# db.create_all()
 
 
 def admin_only(f):
