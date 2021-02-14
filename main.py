@@ -173,7 +173,7 @@ def show_post(post_id):
         return redirect(url_for('show_post', post_id=post_id))
 
     return render_template("post.html", post=requested_post, form=form, current_user=current_user,
-                           comments=all_comments)
+                           comments=all_comments, gravatar=gravatar)
 
 
 @app.route("/about")
