@@ -7,8 +7,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm
+from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, ContactForm
 from flask_gravatar import Gravatar
+import os
+import smtplib
+
+MY_EMAIL = os.environ.get("MY_EMAIL")
+MY_PASSWORD = os.environ.get("PASSWORD")
+recipient = os.environ.get("OPPONENT_EMAIL")
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -174,10 +181,33 @@ def about():
     return render_template("about.html", current_user=current_user)
 
 
-@app.route("/contact")
-def contact():
-    return render_template("contact.html", current_user=current_user)
+@app.route('/contact', methods=["POST", "GET"])
+def contact_page():
+    thanks_message = None
+    # Create a form
+    form = ContactForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        email = form.email_address.data
+        phone = form.phone_number.data
+        message = form.message_field.data
+        thanks_message = "Successfully sent message"
+        send_email(f"{name}\n{email}\n{phone}\n{message}")
+        return render_template("contact.html", form=form, thanks_text=thanks_message)
+    else:
+        return render_template("contact.html", form=form, thanks_text=thanks_message)
 
+
+def send_email(text):
+    # Sending email (part of contact.html)
+    with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+        connection.starttls()
+        connection.login(user=MY_EMAIL, password=MY_PASSWORD)
+        connection.sendmail(
+            from_addr=MY_EMAIL,
+            to_addrs=recipient,
+            msg=f"Subject:A message from your site\n\n{text}".encode("utf8")
+        )
 
 @app.route("/new-post", methods=["GET", "POST"])
 @admin_only
@@ -231,4 +261,4 @@ def delete_post(post_id):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
