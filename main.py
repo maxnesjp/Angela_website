@@ -16,7 +16,7 @@ ckeditor = CKEditor(app)
 Bootstrap(app)
 gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False, use_ssl=False, base_url=None)
 
-##CONNECT TO DB
+# -------------------------------CONNECT TO DB-------------------------------
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -26,42 +26,55 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    user = User.query.filter_by(id=int(user_id)).first()
+    if user:
+        return user
+    return None
 
 
-##CONFIGURE TABLE
+# -------------------------------CONFIGURE TABLES-------------------------------
+
+class BlogPost(db.Model):
+    __tablename__ = "blog_posts"
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Create Foreign Key, "users.id" the users refers to the tablename of User.
+    author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    # Create reference to the User object, the "posts" refers to the posts property in the User class.
+
+    author = relationship("User", back_populates="posts")
+    title = db.Column(db.String(250), unique=True, nullable=False)
+    subtitle = db.Column(db.String(250), nullable=False)
+    date = db.Column(db.String(250), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+
+    img_url = db.Column(db.String(250), nullable=False)
+    comments = relationship("Comment", back_populates="parent_post")
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(100))
+
+    # This will act like a List of BlogPost objects attached to each User.
+    # The "author" refers to the author property in the BlogPost class.
     posts = relationship("BlogPost", back_populates="author")
     comments = relationship("Comment", back_populates="comment_author")
-
-
-class BlogPost(db.Model):
-    __tablename__ = "blog_posts"
-    id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    author = relationship("User", back_populates="posts")
-    title = db.Column(db.String(250), unique=True, nullable=False)
-    subtitle = db.Column(db.String(250), nullable=False)
-    date = db.Column(db.String(250), nullable=False)
-    body = db.Column(db.Text, nullable=False)
-    img_url = db.Column(db.String(250), nullable=False)
-    comments = relationship("Comment", back_populates="parent_post")
-
 
 class Comment(db.Model):
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+
     post_id = db.Column(db.Integer, db.ForeignKey("blog_posts.id"))
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
     parent_post = relationship("BlogPost", back_populates="comments")
     comment_author = relationship("User", back_populates="comments")
-    text = db.Column(db.Text, nullable=False)
-db.create_all()
+
+# db.create_all()
 
 
 def admin_only(f):
@@ -98,7 +111,7 @@ def register():
         new_user = User(
             email=form.email.data,
             name=form.name.data,
-            password=hash_and_salted_password,
+            password=generate_password_hash(form.password.data, method='pbkdf2:sha256', salt_length=8)
         )
         db.session.add(new_user)
         db.session.commit()
@@ -112,18 +125,16 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-
-        user = User.query.filter_by(email=email).first()
-        # Email doesn't exist or password incorrect.
+        user = User.query.filter_by(email=form.email_address.data).first()
+        # Logging in the user to our website
         if not user:
-            flash("That email does not exist, please try again.")
+            flash('This email does not exist.')
             return redirect(url_for('login'))
-        elif not check_password_hash(user.password, password):
-            flash('Password incorrect, please try again.')
+        elif not check_password_hash(password=form.password.data, pwhash=user.password):
+            flash('Incorrect Password')
             return redirect(url_for('login'))
         else:
+            # if the email corresponds to the existing email and the inputted password, then log the user in
             login_user(user)
             return redirect(url_for('get_all_posts'))
     return render_template("login.html", form=form, current_user=current_user)
@@ -138,6 +149,7 @@ def logout():
 @app.route("/post/<int:post_id>", methods=["GET", "POST"])
 def show_post(post_id):
     form = CommentForm()
+    all_comments = Comment.query.filter_by(post_id=post_id).all()  # getting all comments for this post
     requested_post = BlogPost.query.get(post_id)
 
     if form.validate_on_submit():
@@ -152,8 +164,10 @@ def show_post(post_id):
         )
         db.session.add(new_comment)
         db.session.commit()
+        return redirect(url_for('show_post', post_id=post_id))
 
-    return render_template("post.html", post=requested_post, form=form, current_user=current_user)
+    return render_template("post.html", post=requested_post, form=form, current_user=current_user,
+                           comments=all_comments, gravatar=gravatar)
 
 
 @app.route("/about")
