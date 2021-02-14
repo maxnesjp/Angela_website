@@ -76,7 +76,7 @@ class Comment(db.Model):
     parent_post = relationship("BlogPost", back_populates="comments")
     comment_author = relationship("User", back_populates="comments")
 
-# create the database tu
+# create the database tuijhku
 db.create_all()
 
 
