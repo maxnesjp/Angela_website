@@ -129,7 +129,7 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email_address.data).first()
+        user = User.query.filter_by(email=form.email.data).first()
         # Logging in the user to our website
         if not user:
             flash('This email does not exist.')
