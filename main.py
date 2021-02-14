@@ -12,9 +12,9 @@ from flask_gravatar import Gravatar
 import os
 import smtplib
 
-MY_EMAIL = os.environ.get("MY_EMAIL")
-MY_PASSWORD = os.environ.get("PASSWORD")
-recipient = os.environ.get("OPPONENT_EMAIL")
+MY_EMAIL = os.environ.get("SENT_FROM", "MY_EMAIL")
+MY_PASSWORD = os.environ.get("SENT_FROM_PASSWORD", "PASSWORD")
+recipient = os.environ.get("SENT_TO", "OPPONENT_EMAIL")
 
 
 app = Flask(__name__)
