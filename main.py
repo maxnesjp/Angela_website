@@ -12,13 +12,13 @@ from flask_gravatar import Gravatar
 import os
 import smtplib
 
-MY_EMAIL = os.environ.get("SENT_FROM", "MY_EMAIL")
-MY_PASSWORD = os.environ.get("SENT_FROM_PASSWORD", "PASSWORD")
-recipient = os.environ.get("SENT_TO", "OPPONENT_EMAIL")
+MY_EMAIL = os.environ.get("SENT_FROM")
+MY_PASSWORD = os.environ.get("SENT_FROM_PASSWORD")
+recipient = os.environ.get("SENT_TO")
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 ckeditor = CKEditor(app)
 Bootstrap(app)
 gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=False, force_lower=False, use_ssl=False,
