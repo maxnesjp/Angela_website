@@ -214,6 +214,9 @@ def about():
     if form.validate_on_submit():
         if form.key.data == admin_account.email:
             return send_from_directory('static', filename="files/Resume_Maxim_Nesterov.pdf")
+        else:
+            flash('Incorrect code 😁')
+            return redirect(url_for('about'))
     else:
         return render_template("about.html", current_user=current_user, form=form)
 
