@@ -1,3 +1,4 @@
+{% import "bootstrap/wtf.html" as wtf %}
 {% include "header.html" %}
 
   <!-- Page Header -->
@@ -34,9 +35,19 @@
           As for my future career, I am working hard on myself to become a <i>Full-Stack engineer</i>.<br>
           Please let me know if you have something to offer me in terms of getting career experience in stated field of Science & Technology.
         </p>
+        <br>
+        {% if current_user.id != 1: %}
+          {{wtf.quick_form(form, novalidate=True, button_map={'submit': 'primary'})}}
+        {% else: %}
+          <a href="{{url_for('download')}}">My Resume</a>
+        {% endif %}
       </div>
+
     </div>
+
   </div>
+
+
 
   <hr>
 

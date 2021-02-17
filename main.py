@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, abort
+from flask import Flask, render_template, redirect, url_for, flash, abort, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
-from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, ContactForm
+from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, ContactForm, SecretKeyDownload
 from flask_gravatar import Gravatar
 import os
 import smtplib
@@ -15,7 +15,6 @@ import smtplib
 MY_EMAIL = os.environ.get("SENT_FROM")
 MY_PASSWORD = os.environ.get("SENT_FROM_PASSWORD")
 recipient = os.environ.get("SENT_TO")
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
@@ -25,11 +24,12 @@ gravatar = Gravatar(app, size=100, rating='g', default='retro', force_default=Fa
                     base_url=None)
 
 # -------------------------------CONNECT TO DB-------------------------------
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL",  "sqlite:///blog.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL", "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -82,6 +82,7 @@ class Comment(db.Model):
 
     parent_post = relationship("BlogPost", back_populates="comments")
     comment_author = relationship("User", back_populates="comments")
+
 
 # create the database tuijhkujkg234sjsdfhh
 db.create_all()
@@ -176,10 +177,6 @@ def show_post(post_id):
                            comments=all_comments, gravatar=gravatar)
 
 
-@app.route("/about")
-def about():
-    return render_template("about.html", current_user=current_user)
-
 
 @app.route('/contact', methods=["POST", "GET"])
 def contact_page():
@@ -208,6 +205,23 @@ def send_email(text):
             to_addrs=recipient,
             msg=f"Subject:A message from your site\n\n{text}".encode("utf8")
         )
+
+
+@app.route('/about', methods=["POST", "GET"])
+def about():
+    form = SecretKeyDownload()
+    admin_account = User.query.filter_by(id=1).first()
+    if form.validate_on_submit():
+        if form.key.data == admin_account.email:
+            return send_from_directory('static', filename="files/Resume_Maxim_Nesterov.pdf")
+    else:
+        return render_template("about.html", current_user=current_user, form=form)
+
+
+@app.route('/download')
+@admin_only
+def download():
+    return send_from_directory('static', filename="files/Resume_Maxim_Nesterov.pdf")
 
 @app.route("/new-post", methods=["GET", "POST"])
 @admin_only

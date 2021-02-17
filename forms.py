@@ -36,8 +36,13 @@ class ContactForm(FlaskForm):
     email_address = StringField(label="Email Address",
                                 validators=[
                                     DataRequired(message="This field is required."),
-                                    ])
+                                ])
     phone_number = StringField(label="Phone Number", validators=[DataRequired(message="This field is required.")])
     message_field = TextAreaField(label="Message",
                                   validators=[DataRequired(message="This field is required."), Length(max=200)])
     submit = SubmitField("Send")
+
+
+class SecretKeyDownload(FlaskForm):
+    key = StringField(label="Secret Code", validators=[DataRequired(message="This field is required.")])
+    submit = SubmitField("Get Access to Resume")
