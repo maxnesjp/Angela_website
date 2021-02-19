@@ -50,5 +50,10 @@
     </div>
   </div>
   <hr>
+  <div>
+    {% for user in users: %}
+    <p>{{user.id}}</p>
+    {% endfor %}
+  </div>
 
 {% include "footer.html" %}

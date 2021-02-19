@@ -85,7 +85,6 @@ class Comment(db.Model):
 
 
 # create the database tuijhkujkg234sjsdfhh
-db.create_all()
 
 
 def admin_only(f):
@@ -100,8 +99,12 @@ def admin_only(f):
 
 @app.route('/')
 def get_all_posts():
+    db.create_all()
+    all_users = db.session.query(User).all()
+    for user in all_users:
+        print(user.id)
     posts = BlogPost.query.all()
-    return render_template("index.html", all_posts=posts, current_user=current_user)
+    return render_template("index.html", all_posts=posts, current_user=current_user, users=all_users)
 
 
 @app.route('/register', methods=["GET", "POST"])
