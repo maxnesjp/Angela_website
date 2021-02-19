@@ -13,6 +13,7 @@ import os
 import smtplib
 
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 ckeditor = CKEditor(app)
@@ -197,19 +198,25 @@ def contact_page():
 
 def send_email(text):
     # Sending email (part of contact.html)
-    receiver = User.query.filter_by(id=1).first()
-    sender = User.query.filter_by(id=5).first()
-    MY_EMAIL = sender.email
-    MY_PASSWORD = sender.name
-    recipient = receiver.email
     with smtplib.SMTP("smtp.gmail.com", 587) as connection:
         connection.starttls()
-        connection.login(user=MY_EMAIL, password=MY_PASSWORD)
-        connection.sendmail(
-            from_addr=MY_EMAIL,
-            to_addrs=recipient,
-            msg=f"Subject:A message from your site\n\n{text}".encode("utf8")
-        )
+        try:
+            connection.login(user=os.environ.get("SENT_FROM"), password=os.environ.get("SENT_FROM_PASSWORD"))
+            connection.sendmail(
+                from_addr=os.environ.get("SENT_FROM"),
+                to_addrs=os.environ.get("SENT_TO"),
+                msg=f"Subject:A message from your site\n\n{text}".encode("utf8")
+            )
+        except:
+            connection.login(user=os.environ.get("SENDER_EMAIL"), password=os.environ.get("SENDER_PASSWORD"))
+            connection.sendmail(
+                from_addr=os.environ.get("SENDER_EMAIL"),
+                to_addrs=os.environ.get("RECIPIENT_EMAIL"),
+                msg=f"Subject:A message from your site\n\n{text}".encode("utf8")
+            )
+
+
+
 
 
 @app.route('/about', methods=["POST", "GET"])
