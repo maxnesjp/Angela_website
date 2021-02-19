@@ -11,6 +11,7 @@ from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, ContactF
 from flask_gravatar import Gravatar
 import os
 import smtplib
+import requests
 
 
 
@@ -190,7 +191,7 @@ def contact_page():
         phone = form.phone_number.data
         message = form.message_field.data
         thanks_message = "Successfully sent message"
-        send_email(f"{name}\n{email}\n{phone}\n{message}")
+        send_email_trustifi(f"{name}\n{email}\n{phone}\n{message}")
         return render_template("contact.html", form=form, thanks_text=thanks_message)
     else:
         return render_template("contact.html", form=form, thanks_text=thanks_message)
@@ -215,7 +216,18 @@ def send_email(text):
                 msg=f"Subject:A message from your site\n\n{text}".encode("utf8")
             )
 
+def send_email_trustifi(text):
+    url = os.environ['TRUSTIFI_URL'] + '/api/i/v1/email'
 
+    payload = "{\"recipients\":[{\"email\":\"test@trustificorp.org\"}],\"title\":\"Title\",\"html\":\"Body\"}"
+    headers = {
+        'x-trustifi-key': os.environ['TRUSTIFI_KEY'],
+        'x-trustifi-secret': os.environ['TRUSTIFI_SECRET'],
+        'Content-Type': 'application/json'
+    }
+
+    response = requests.request('POST', url, headers=headers, data=payload)
+    print(response.json())
 
 
 
