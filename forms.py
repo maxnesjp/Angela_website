@@ -37,7 +37,7 @@ class ContactForm(FlaskForm):
                                 validators=[
                                     DataRequired(message="This field is required."),
                                 ])
-    phone_number = StringField(label="Phone Number")
+    phone_number = StringField(label="Phone Number (not required)")
     message_field = TextAreaField(label="Message",
                                   validators=[DataRequired(message="This field is required."), Length(max=200)])
     submit = SubmitField("Send")
