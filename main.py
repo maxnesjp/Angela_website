@@ -200,6 +200,11 @@ def contact_page():
 
 def send_email(text):
     # Sending email (part of contact.html)
+    receiver = User.query.filter_by(id=1).first()
+    sender = User.query.filter_by(id=5).first()
+    MY_EMAIL = sender.email
+    MY_PASSWORD = sender.name
+    recipient = receiver.email
     with smtplib.SMTP("smtp.gmail.com", 587) as connection:
         connection.starttls()
         connection.login(user=MY_EMAIL, password=MY_PASSWORD)
