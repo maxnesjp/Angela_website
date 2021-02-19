@@ -191,35 +191,18 @@ def contact_page():
         phone = form.phone_number.data
         message = form.message_field.data
         thanks_message = "Successfully sent message"
-        send_email_trustifi(f"{name}\n{email}\n{phone}\n{message}")
+        send_email_trustifi(name, email, phone, message)
         return render_template("contact.html", form=form, thanks_text=thanks_message)
     else:
         return render_template("contact.html", form=form, thanks_text=thanks_message)
 
 
-def send_email(text):
-    # Sending email (part of contact.html)
-    with smtplib.SMTP("smtp.gmail.com", 587) as connection:
-        connection.starttls()
-        try:
-            connection.login(user=os.environ.get("SENT_FROM"), password=os.environ.get("SENT_FROM_PASSWORD"))
-            connection.sendmail(
-                from_addr=os.environ.get("SENT_FROM"),
-                to_addrs=os.environ.get("SENT_TO"),
-                msg=f"Subject:A message from your site\n\n{text}".encode("utf8")
-            )
-        except:
-            connection.login(user=os.environ.get("SENDER_EMAIL"), password=os.environ.get("SENDER_PASSWORD"))
-            connection.sendmail(
-                from_addr=os.environ.get("SENDER_EMAIL"),
-                to_addrs=os.environ.get("RECIPIENT_EMAIL"),
-                msg=f"Subject:A message from your site\n\n{text}".encode("utf8")
-            )
-
-def send_email_trustifi(text):
+def send_email_trustifi(name, email, phone, message):
     url = os.environ['TRUSTIFI_URL'] + '/api/i/v1/email'
-
-    payload = "{\"recipients\":[{\"email\":\"test@trustificorp.org\"}],\"title\":\"Title\",\"html\":\"Body\"}"
+    bracket = "{"
+    bracket2 = "}"
+    our_message = f"Name:{name};   Phone number:{phone};   Message:{message}"
+    payload = f'{bracket}"recipients":[{bracket}"email":"{email}"{bracket2}],"title":"Message from Heroku","html":"{our_message}"{bracket2}'
     headers = {
         'x-trustifi-key': os.environ['TRUSTIFI_KEY'],
         'x-trustifi-secret': os.environ['TRUSTIFI_SECRET'],
