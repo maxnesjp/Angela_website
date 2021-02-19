@@ -104,7 +104,7 @@ def get_all_posts():
     for user in all_users:
         print(user.id)
     posts = BlogPost.query.all()
-    return render_template("index.html", all_posts=posts, current_user=current_user, users=all_users)
+    return render_template("index.html", all_posts=posts, current_user=current_user)
 
 
 @app.route('/register', methods=["GET", "POST"])
