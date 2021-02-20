@@ -201,8 +201,8 @@ def send_email_trustifi(name, email, phone, message):
     url = os.environ['TRUSTIFI_URL'] + '/api/i/v1/email'
     bracket = "{"
     bracket2 = "}"
-    our_message = f"Name:{name};   Phone number:{phone};   Message:{message}"
-    payload = f'{bracket}"recipients":[{bracket}"email":"{email}"{bracket2}],"title":"Message from Heroku","html":"{our_message}"{bracket2}'
+    our_message = f"Name:{name};   Phone number:{phone};   Email: {email};   Message:{message}"
+    payload = f'{bracket}"recipients":[{bracket}"email":"maxnes500@gmail.com"{bracket2}],"title":"Message from Heroku","html":"{our_message}"{bracket2}'
     headers = {
         'x-trustifi-key': os.environ['TRUSTIFI_KEY'],
         'x-trustifi-secret': os.environ['TRUSTIFI_SECRET'],
