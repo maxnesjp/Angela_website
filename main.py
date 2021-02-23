@@ -10,10 +10,12 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, ContactForm, SecretKeyDownload
 from flask_gravatar import Gravatar
 import os
-import smtplib
 import requests
 
-
+SECRET_CODE = os.environ.get("SECRET_CODE")
+TRUSTIFI_KEY = os.environ.get("TRUSTIFI_KEY")
+TRUSTIFI_SECRET = os.environ.get("TRUSTIFI_SECRET")
+TRUSTIFI_URL = os.environ.get("TRUSTIFI_URL")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
@@ -99,9 +101,6 @@ def admin_only(f):
 @app.route('/')
 def get_all_posts():
     db.create_all()
-    all_users = db.session.query(User).all()
-    for user in all_users:
-        print(user.id)
     posts = BlogPost.query.all()
     return render_template("index.html", all_posts=posts, current_user=current_user)
 
@@ -198,14 +197,14 @@ def contact_page():
 
 
 def send_email_trustifi(name, email, phone, message):
-    url = os.environ['TRUSTIFI_URL'] + '/api/i/v1/email'
+    url = TRUSTIFI_URL + '/api/i/v1/email'
     bracket = "{"
     bracket2 = "}"
     our_message = f"Name:{name};   Phone number:{phone};   Email: {email};   Message:{message}"
     payload = f'{bracket}"recipients":[{bracket}"email":"maxnes500@gmail.com"{bracket2}],"title":"Message from Heroku","html":"{our_message}"{bracket2}'
     headers = {
-        'x-trustifi-key': os.environ['TRUSTIFI_KEY'],
-        'x-trustifi-secret': os.environ['TRUSTIFI_SECRET'],
+        'x-trustifi-key': TRUSTIFI_KEY,
+        'x-trustifi-secret': TRUSTIFI_SECRET,
         'Content-Type': 'application/json'
     }
 
@@ -217,9 +216,8 @@ def send_email_trustifi(name, email, phone, message):
 @app.route('/about', methods=["POST", "GET"])
 def about():
     form = SecretKeyDownload()
-    admin_account = User.query.filter_by(id=1).first()
     if form.validate_on_submit():
-        if form.key.data == admin_account.email:
+        if form.key.data == SECRET_CODE:
             return send_from_directory('static', filename="files/Resume_Maxim_Nesterov.pdf")
         else:
             flash('Incorrect code 😁')
