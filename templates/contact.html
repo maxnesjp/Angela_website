@@ -3,15 +3,17 @@
 {% include "header.html" %}
 
   <!-- Page Header -->
-  <header class="masthead" style="background-image: url('{{ url_for('static', filename='img/contact-bg.jpg')}}')">
+  <header class="masthead" style="background-image: url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')">
     <div class="overlay"></div>
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
           <div class="page-heading">
             {% if thanks_text != None: %}
+            <!-- Display thanks Message (that is - Successfully sent message) if the user sent the form -->
               <h1>{{thanks_text}}</h1>
               {% else: %}
+                <!-- if not: Display: -->
                 <h1>Contact Me</h1>
               <span class="subheading">Have questions? I have answers.</span>
             {% endif %}
@@ -26,16 +28,15 @@
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
         {% if thanks_text != None: %}
+        <!-- Create a tag that lets the user to go back to the main page  -->
           <p style="margin: auto;width: 50%;padding-bottom: 200px;">
-            <a href="{{url_for('get_all_posts')}}">Go to Home Page</a>
+            <a class="thanks_msg" href="{{url_for('get_all_posts')}}">Go to Home Page</a>
           </p>
           {% else: %}
             <p>Want to get in touch? Fill out the form below to send me a message and I will get back to you as soon as possible!</p>
+            <!-- Contact Form -->
             {{wtf.quick_form(form, novalidate=True, button_map={'submit': 'primary'})}}
         {% endif %}
-        <!-- Contact Form - Enter your email address on line 19 of the mail/contact_me.php file to make this form work. -->
-        <!-- WARNING: Some web hosts do not allow emails to be sent through forms to common mail hosts like Gmail or Yahoo. It's recommended that you use a private domain email address! -->
-        <!-- To use the contact form, your site must be on a live web host with PHP! The form will not work locally! -->
       </div>
     </div>
   </div>

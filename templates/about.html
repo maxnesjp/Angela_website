@@ -2,7 +2,7 @@
 {% include "header.html" %}
 
   <!-- Page Header -->
-  <header class="masthead" style="background-image: url({{ url_for('static', filename='img/about-bg.jpg')}})">
+  <header class="masthead" style="background-image: url('https://images.unsplash.com/photo-1515524738708-327f6b0037a7?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1350&q=80')">
     <div class="overlay"></div>
     <div class="container">
       <div class="row">
@@ -20,6 +20,7 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Get error messages if there are any and display those -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
           {% for message in messages %}
@@ -29,14 +30,15 @@
         {% endwith %}
         <p>
           This is my experimental blog page to show what I can do with the Python programming language. <br>
-            This website is almost entirely built using Python but also incorporates HTML, CSS and JS, as well as PostgreSQL.
-            It includes Python libraries and frameworks like Flask, Flask_Ckeditor, datetime, SQLAlchemy, Flask wtforms, smtplib, Jinja2, requests and others.</p>
-          <p>
-            <strong>A little bit about myself:</strong> <br>
-            My name is Maxim Nesterov, currently settled in Tokyo, Japan.
-            I am junior at Temple University Japan Campus studying Computer Science and Economics. <br>
-            There is another page with more details on how I am: <br>
-            <strong><a href="https://maxnesjp.github.io/my_website/">My Personal Website</a></strong>
+          This website is almost entirely built using Python but also incorporates HTML, CSS and JS, as well as PostgreSQL.
+          It includes Python libraries and frameworks like Flask, Flask_Ckeditor, datetime, SQLAlchemy, Flask wtforms, smtplib, Jinja2, requests and others.
+        </p>
+        <p>
+          <strong>A little bit about myself:</strong> <br>
+          My name is Maxim Nesterov, currently settled in Tokyo, Japan.
+          I am junior at Temple University Japan Campus studying Computer Science and Economics. <br>
+          There is another page with more details on how I am: <br>
+          <strong><a href="https://maxnesjp.github.io/my_website/">My Personal Website</a></strong>
         </p>
         <p>
           As for my future career, I am working hard to become a <i>Full-Stack engineer</i>.<br>
@@ -53,8 +55,6 @@
     </div>
 
   </div>
-
-
 
   <hr>
 

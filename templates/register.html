@@ -1,4 +1,3 @@
-
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block content %}
@@ -22,6 +21,7 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
+        <!-- Registration Form  -->
         {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
       </div>
     </div>

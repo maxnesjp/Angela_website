@@ -1,3 +1,9 @@
 .error, .help-block {
     color: red
 }
+.thanks_msg {
+    text-decoration: none;
+}
+.thanks_msg:hover {
+    color: #EAF6F6;
+}

@@ -11,6 +11,8 @@ from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm, ContactF
 from flask_gravatar import Gravatar
 import os
 import requests
+# pip install python-dotenv
+
 
 SECRET_CODE = os.environ.get("SECRET_CODE")
 TRUSTIFI_KEY = os.environ.get("TRUSTIFI_KEY")
@@ -85,7 +87,7 @@ class Comment(db.Model):
     comment_author = relationship("User", back_populates="comments")
 
 
-# create the database tuijhkujkg234sjsdfhh
+# create the database
 
 
 def admin_only(f):
